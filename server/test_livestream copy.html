@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Auto-player instantiation example, single videoElement, using src attribute</title>
+    <script src="https://cdn.dashjs.org/latest/dash.all.debug.js"></script>
+    
+    <style>
+      video {
+          width: 640px;
+          height: 360px;
+      }
+    </style>
+
+    <script>
+      function myFunc(player) {
+        console.log("low latency enabled: " + player.getLowLatencyModeEnabled());
+        console.log("target latency: " + player.getSettings().streaming.delay.liveDelay);
+        console.log("live latency: " + player.getCurrentLiveLatency());
+        console.log("is dynamic: " + player.getDashAdapter().getIsDynamic());
+        console.log("duration: " + player.getDashAdapter().getDuration());
+        console.log("media duration: " + player.getDashMetrics().getCurrentHttpRequest('video')._mediaduration);
+      }
+      
+      function init() {
+        var video,
+            player,
+            url = "http://localhost:8080/live.mpd";
+
+        video = document.querySelector("video");
+        player = dashjs.MediaPlayer().create();
+        player.initialize(); /* initialize the MediaPlayer instance */
+        player.updateSettings({
+            streaming: {
+              delay: {
+                liveDelay : 2.0,
+              },
+            }
+        });
+        player.setAutoPlay(true);
+        player.attachView(video); /* tell the player which videoElement it should use */
+        player.attachSource(url); /* provide the manifest source */
+
+	      setInterval(myFunc, 1000, player);
+      }
+    </script>
+  </head>
+
+  <body>
+    <main>
+    <div>
+      <video controls="true" autoplay="" muted="">
+	<!--	<source src="https://gitmanager.cs.aalto.fi/static/CS-E4265_2024Autumn/_downloads/449848472c304926c35120462ab0101f/out.mpd" type="application/dash+xml"> -->
+      </video>
+    </div>
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        init();
+    });
+    </script>
+    
+  </body>
+</html>
